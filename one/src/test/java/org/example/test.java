@@ -11,7 +11,10 @@ import org.example.mapper.TagMapper;
 import org.example.service.BlogService;
 import org.example.service.WebNavBarService;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
+
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -32,6 +35,9 @@ public class test {
 
     @Resource
     private TagMapper tagMapper;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
     @Test
     public void test(){
         log.info("结果:{}",blogService.list());
@@ -72,5 +78,8 @@ public class test {
         List<Tag> list1 = tagMapper.getList(list);
         System.out.println(list1);
     }
-
+    @Test
+    public void text(){
+        stringRedisTemplate.opsForValue().set("text",new String("text"));
+    }
 }
