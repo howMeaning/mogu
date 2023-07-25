@@ -1,0 +1,11 @@
+server:
+  port: 8605
+spring:
+  application:
+    name: mogu-search
+  cloud:
+    nacos:
+      server-addr: localhost:8848
+      config:
+        file-extension: yaml
+        namespace: a9b1c01f-601c-4c19-8843-d6a206131b2c

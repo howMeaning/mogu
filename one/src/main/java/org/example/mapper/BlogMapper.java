@@ -18,5 +18,5 @@ public interface BlogMapper extends BaseMapper<Blog> {
     @Select("select * from t_blog order by click_count desc limit 10")
     List<Blog> selectBlogList();
 
-    List<Blog> selectPage(Integer page,Integer pageSize);
+    List<Blog> selectPages(Integer page,Integer pageSize);
 }

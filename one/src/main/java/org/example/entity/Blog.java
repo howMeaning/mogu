@@ -96,7 +96,7 @@ public class Blog {
     //投稿用户UID
     private String userUid;
     //文章来源【0 后台添加，1 用户投稿】
-    private Short articleSource;
+    private Character articleSource;
     //下个都需要连表查询,不需要从数据库当中找
     @TableField(exist = false)
     private BlogSort blogSort;

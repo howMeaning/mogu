@@ -6,7 +6,7 @@
 
     <select id="selectByLevel" resultType="org.example.entity.Blog"></select>
 
-    <select id="selectPage" resultType="org.example.entity.Blog">
+    <select id="selectPages" resultType="org.example.entity.Blog">
         select *
         from t_blog
         order by create_time desc

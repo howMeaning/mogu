@@ -4,7 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.example.dto.BlogDTO;
+import org.example.dto.Result;
+import org.example.dto.TransferDTO;
 import org.example.entity.BlogSort;
 import org.example.entity.Tag;
 import org.example.mapper.BlogMapper;
@@ -42,65 +43,24 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
     }
 
     @Override
-    public BlogDTO getBlogByLevel(Integer level, Integer useSort) {
+    public TransferDTO getBlogByLevel(Integer level, Integer useSort) {
         //排序功能
         List<Blog> blogOrderList = getBlogOrderList(level, useSort);
         //排序过后
-        blogOrderList.forEach(blog-> {
-            //三个应该有一个任务分发模式
-            String blogSortUid = blog.getBlogSortUid();
-            String tagUid = blog.getTagUid();
-            String fileUid = blog.getFileUid();
-           /* String format = blog.getUpdateTime().format(DateTimeFormatter.ofPattern("yyyy:MM:DD HH:mm:ss"));
-            String format1 = blog.getCreateTime().format(DateTimeFormatter.ofPattern("yyyy:MM:DD HH:mm:ss"));
-            blog.setUpdateTime(LocalDateTime.parse(format));
-            blog.setCreateTime(LocalDateTime.parse(format1));*/
+        blogOrderList.forEach(this::manageBlog);
+        TransferDTO transferDTO = new TransferDTO(blogOrderList, 0, 10, 1, null, true, true);
 
-                BlogSort blogSort = blogSortMapper.selectOne(new QueryWrapper<BlogSort>().eq("uid",blogSortUid));
-                blog.setBlogSort(blogSort);
-
-                List<String> taguidlist = Arrays.stream(tagUid.split(",")).collect(Collectors.toList());
-                List<Tag> tagList = tagMapper.getList(taguidlist);
-                log.info("测试:{}",tagList);
-                blog.setTagList(tagList);
-
-                //这个是别的数据库,需要进行feign的远程调用
-                blog.setPhotoList(Collections.emptyList());
-        });
-        BlogDTO blogDTO = new BlogDTO(blogOrderList, 0, 10, 1, null, true, true);
-
-        return blogDTO;
+        return transferDTO;
 
     }
-
     @Override
-    public BlogDTO getHotBlog() {
+    public TransferDTO getHotBlog() {
         //排序功能
         List<Blog> blogList = blogMapper.selectBlogList();
         //排序过后
-        blogList.forEach(blog-> {
-            //三个应该有一个任务分发模式
-            String blogSortUid = blog.getBlogSortUid();
-            String tagUid = blog.getTagUid();
-            String fileUid = blog.getFileUid();
-           /* String format = blog.getUpdateTime().format(DateTimeFormatter.ofPattern("yyyy:MM:DD HH:mm:ss"));
-            String format1 = blog.getCreateTime().format(DateTimeFormatter.ofPattern("yyyy:MM:DD HH:mm:ss"));
-            blog.setUpdateTime(LocalDateTime.parse(format));
-            blog.setCreateTime(LocalDateTime.parse(format1));*/
-
-            BlogSort blogSort = blogSortMapper.selectOne(new QueryWrapper<BlogSort>().eq("uid",blogSortUid));
-            blog.setBlogSort(blogSort);
-
-            List<String> taguidlist = Arrays.stream(tagUid.split(",")).collect(Collectors.toList());
-            List<Tag> tagList = tagMapper.getList(taguidlist);
-            log.info("测试:{}",tagList);
-            blog.setTagList(tagList);
-
-            //这个是别的数据库,需要进行feign的远程调用
-            blog.setPhotoList(Collections.emptyList());
-        });
-        BlogDTO blogDTO = new BlogDTO(blogList, 0, 10, 1, null, true, true);
-        return blogDTO;
+        blogList.forEach(this::manageBlog);
+        TransferDTO transferDTO = new TransferDTO(blogList, 0, 10, 1, null, true, true);
+        return transferDTO;
     }
 
     private List<Blog> getBlogOrderList(Integer level, Integer useSort) {
@@ -117,32 +77,51 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
         }
     }
 
-    public BlogDTO getpage(int page, int pageSize) {
+    public TransferDTO getpage(int page, int pageSize) {
         //进行分页排序
-        List<Blog> blogList = blogMapper.selectPage(page, pageSize);
+        List<Blog> blogList = blogMapper.selectPages(page, pageSize);
         //排序过后
-        blogList.forEach(blog-> {
-            //三个应该有一个任务分发模式
-            String blogSortUid = blog.getBlogSortUid();
-            String tagUid = blog.getTagUid();
-            String fileUid = blog.getFileUid();
+        blogList.forEach(this::manageBlog);
+        TransferDTO transferDTO = new TransferDTO(blogList, 0, 10, 1, null, true, true);
+        return transferDTO;
+    }
+
+
+    @Override
+    public TransferDTO getSameBlogByBlogUid(String blogUid) {
+        List<Blog> blogList = blogMapper.selectList(new QueryWrapper<Blog>().eq("uid", blogUid));
+        blogList.forEach(this::manageBlog);
+        TransferDTO<Blog> transferDTO = new TransferDTO(blogList, 0, 10, 1, null, true, true);
+        return transferDTO;
+    }
+
+    @Override
+    public Blog getBlogByUid(Integer oid) {
+        Blog blog = blogMapper.selectOne(new QueryWrapper<Blog>().eq("oid",oid));
+        manageBlog(blog);
+        return blog;
+    }
+
+    private void manageBlog(Blog blog) {
+        //三个应该有一个任务分发模式
+        String blogSortUid = blog.getBlogSortUid();
+        String tagUid = blog.getTagUid();
+        String fileUid = blog.getFileUid();
            /* String format = blog.getUpdateTime().format(DateTimeFormatter.ofPattern("yyyy:MM:DD HH:mm:ss"));
             String format1 = blog.getCreateTime().format(DateTimeFormatter.ofPattern("yyyy:MM:DD HH:mm:ss"));
             blog.setUpdateTime(LocalDateTime.parse(format));
             blog.setCreateTime(LocalDateTime.parse(format1));*/
 
-            BlogSort blogSort = blogSortMapper.selectOne(new QueryWrapper<BlogSort>().eq("uid",blogSortUid));
-            blog.setBlogSort(blogSort);
+        BlogSort blogSort = blogSortMapper.selectOne(new QueryWrapper<BlogSort>().eq("uid",blogSortUid));
+        blog.setBlogSort(blogSort);
 
-            List<String> taguidlist = Arrays.stream(tagUid.split(",")).collect(Collectors.toList());
-            List<Tag> tagList = tagMapper.getList(taguidlist);
-            log.info("测试:{}",tagList);
-            blog.setTagList(tagList);
+        List<String> taguidlist = Arrays.stream(tagUid.split(",")).collect(Collectors.toList());
+        List<Tag> tagList = tagMapper.getList(taguidlist);
+        log.info("测试:{}",tagList);
+        blog.setTagList(tagList);
 
-            //这个是别的数据库,需要进行feign的远程调用
-            blog.setPhotoList(Collections.emptyList());
-        });
-        BlogDTO blogDTO = new BlogDTO(blogList, 0, 10, 1, null, true, true);
-        return blogDTO;
+        //这个是别的数据库,需要进行feign的远程调用
+        blog.setPhotoList(Collections.emptyList());
     }
+
 }

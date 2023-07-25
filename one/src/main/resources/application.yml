@@ -1,24 +1,30 @@
-server:
-  port: 8608
-spring:
-  application:
-    name: blog-service
-  datasource:
-    username: root
-    url: jdbc:mysql://192.168.239.100:3306/mogu_blog
-    password: 1234
-    driver-class-name: com.mysql.jdbc.Driver
-  cloud:
-    nacos:
-      server-addr: localhost:8848
-  redis:
-    port: 6379
-    password: 1234
-    host: 192.168.239.100
-mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-  type-aliases-package: org.example.entity
-logging:
-  level:
-    one: debug
+#server:
+#  port: 8608
+#spring:
+#  application:
+#    name: blog-service
+#  datasource:
+#    username: root
+#    url: jdbc:mysql://192.168.239.100:3306/mogu_blog?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+#    password: 1234
+#    driver-class-name: com.mysql.jdbc.Driver
+#  cloud:
+#    nacos:
+#      server-addr: localhost:8848
+#  redis:
+#    port: 6379
+#    password: 1234
+#    host: 192.168.239.100
+#mybatis-plus:
+##  configuration:
+##    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#  type-aliases-package: org.example.entity
+
+#logging:
+#  level:
+#    one: debug
+#pagehelper:
+#  helper-dialect: mysql
+#  resonable: true
+#  support-methods-arguments: true
+#  params: countSql

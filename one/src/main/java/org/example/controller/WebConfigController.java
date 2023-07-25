@@ -44,11 +44,7 @@ public class WebConfigController {
         return Result.ok(navbar_level);
     }
 
-    @GetMapping("/getBlogByLevel")
-    public Result getBlogByLevel(@RequestParam Integer level,@RequestParam Integer useSort){
 
-       return Result.ok(blogService.getBlogByLevel(level,useSort));
-    }
 
    /* @GetMapping("/getNewBlog")
     public Result getNewBlog(@RequestParam Integer currentPage,@RequestParam Integer pageSize){

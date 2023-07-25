@@ -9,7 +9,7 @@ spring:
     gateway:
       routes:
         - id: blog-service
-          uri: lb://blog-service
+          uri: lb://blogService
           predicates:
               - Path=/mogu-web/**
             #      解决跨域问题
